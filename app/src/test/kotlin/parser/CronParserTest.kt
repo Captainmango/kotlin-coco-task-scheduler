@@ -1,5 +1,7 @@
 package parser
 
+import parser.domain.CronNode
+import parser.domain.Interval
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -11,7 +13,6 @@ class CronParserTest {
         val parser = CronParser.make(expectedInput)
 
         assertEquals(expectedInput, parser.input)
-        assertEquals('*', parser.readToken())
     }
 
     @Test
@@ -19,11 +20,10 @@ class CronParserTest {
         val expectedInput = "* 1 2-3"
         val parser = CronParser.make(expectedInput)
 
-        val cur = parser.readToken()
-        val next = parser.readToken()
+        val toks = parser.parse()
 
-        assertNotEquals(cur, next)
-        assertEquals(expectedInput[0], cur)
-        assertEquals(expectedInput[1], next)
+        val minuteFragment = CronNode.Wildcard("*", Interval.MINUTE)
+
+        assertEquals(minuteFragment, toks.minute)
     }
 }
