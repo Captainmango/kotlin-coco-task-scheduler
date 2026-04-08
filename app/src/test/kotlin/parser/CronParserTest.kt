@@ -28,4 +28,24 @@ class CronParserTest {
         assertEquals(minuteFragment, cron.minute)
         assertEquals(hourFragment, cron.hour)
     }
+
+    @Test
+    fun testCanParseFullBasicCron() {
+        val expectedInput = "*/15 1-5 1,15 * 1"
+        val parser = CronParser.make(expectedInput)
+
+        val cron = parser.parse()
+
+        val minuteFragment = CronNode.Wildcard("*", Interval.MINUTE)
+        val hourFragment = CronNode.Wildcard("*", Interval.HOUR)
+        val dayOfMonthFragment = CronNode.Wildcard("*", Interval.DAY_OF_MONTH)
+        val monthFragment = CronNode.Wildcard("*", Interval.MONTH)
+        val dayOfWeekFragment = CronNode.Wildcard("*", Interval.DAY_OF_WEEK)
+
+        assertEquals(minuteFragment, cron.minute)
+        assertEquals(hourFragment, cron.hour)
+        assertEquals(dayOfMonthFragment, cron.dayOfMonth)
+        assertEquals(monthFragment, cron.month)
+        assertEquals(dayOfWeekFragment, cron.dayOfWeek)
+    }
 }
