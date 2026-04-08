@@ -6,6 +6,7 @@ import parser.domain.Interval
 import parser.domain.divisor
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 
 class CronParserTest {
@@ -49,5 +50,33 @@ class CronParserTest {
         assertEquals(dayOfMonthFragment, cron.dayOfMonth)
         assertEquals(monthFragment, cron.month)
         assertEquals(dayOfWeekFragment, cron.dayOfWeek)
+    }
+
+    @Test
+    fun testEmptyInputThrowsError() {
+        assertFailsWith<Exception> {
+            CronParser.make("").parse()
+        }
+    }
+
+    @Test
+    fun testInvalidCharacterThrowsError() {
+        assertFailsWith<Exception> {
+            CronParser.make("a * * * *").parse()
+        }
+    }
+
+    @Test
+    fun testInvalidFragmentAfterAsteriskThrowsError() {
+        assertFailsWith<Exception> {
+            CronParser.make("*5 * * * *").parse()
+        }
+    }
+
+    @Test
+    fun testInvalidFormatWithWhitespaceThrowsError() {
+        assertFailsWith<Exception> {
+            CronParser.make("*  * * * *").parse()
+        }
     }
 }

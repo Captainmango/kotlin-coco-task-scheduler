@@ -117,7 +117,8 @@ class CronParser private constructor(
 
         val num = this.readNumber()
 
-        val nextTok = this.peekToken()
+        // Check the next token at readPos (where readNumber stopped)
+        val nextTok = if (this.readPos < this.input.length) this.input[this.readPos] else ' '
 
         return when (nextTok) {
             '-' -> {
@@ -126,7 +127,7 @@ class CronParser private constructor(
 
                 val end = this.readNumber()
 
-                this.currPos = this.readPos // advance currPos past the range ident
+                this.currPos = this.readPos // advance currPos past the range end
                 CronNode.Range(
                     this.getRawStringFrom(startPos),
                     this.currInterval,
@@ -140,7 +141,7 @@ class CronParser private constructor(
 
                 val nextNum = this.readNumber()
 
-                this.currPos = this.readPos // advance currPos past the list ident
+                this.currPos = this.readPos // advance currPos past the list end
                 CronNode.NumList(
                     this.getRawStringFrom(startPos),
                     this.currInterval,
