@@ -20,7 +20,7 @@ class CronParserTest {
 
     @Test
     fun testCanParseBasicInput() {
-        val expectedInput = "* 1"
+        val expectedInput = "* 1 * * *"
         val parser = CronParser.make(expectedInput)
 
         val cron = parser.parse()
