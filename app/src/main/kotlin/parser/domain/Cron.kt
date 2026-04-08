@@ -10,12 +10,18 @@ data class Cron (
 ) {
     companion object {
         fun fromMutableList(l: List<CronNode>): Cron {
+            val minuteFragment = l.getOrNull(0)
+            val hourFragment = l.getOrNull(1)
+            val dayOfMonthFragment = l.getOrNull(2)
+            val monthFragment = l.getOrNull(3)
+            val dayOfWeekFragment = l.getOrNull(4)
+
             return Cron(
-                l[0],
-                l[1],
-                l[2],
-                l[3],
-                l[4],
+                minuteFragment,
+                hourFragment,
+                dayOfMonthFragment,
+                monthFragment,
+                dayOfWeekFragment,
             )
         }
     }

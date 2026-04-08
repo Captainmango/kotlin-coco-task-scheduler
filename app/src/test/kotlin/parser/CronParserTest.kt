@@ -17,13 +17,15 @@ class CronParserTest {
 
     @Test
     fun testCanReadTokens() {
-        val expectedInput = "* 1 2-3"
+        val expectedInput = "* 1"
         val parser = CronParser.make(expectedInput)
 
-        val toks = parser.parse()
+        val cron = parser.parse()
 
         val minuteFragment = CronNode.Wildcard("*", Interval.MINUTE)
+        val hourFragment = CronNode.Single("1", Interval.HOUR, 1)
 
-        assertEquals(minuteFragment, toks.minute)
+        assertEquals(minuteFragment, cron.minute)
+        assertEquals(hourFragment, cron.hour)
     }
 }
