@@ -16,7 +16,7 @@ class CronParserTest {
     }
 
     @Test
-    fun testCanReadTokens() {
+    fun testCanParseBasicInput() {
         val expectedInput = "* 1"
         val parser = CronParser.make(expectedInput)
 

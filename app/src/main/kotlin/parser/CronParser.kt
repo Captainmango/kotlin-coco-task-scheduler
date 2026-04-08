@@ -33,7 +33,7 @@ class CronParser private constructor(
 
         this.currInterval = order.next()
 
-        while (this.currPos < this.input.length) {
+        while (this.currPos <= this.input.length - 1) {
             this.currToken = this.getToken()
 
             var cf = when {
@@ -88,34 +88,23 @@ class CronParser private constructor(
         val nextTok = this.peekToken()
 
         return when {
-            nextTok.isWhitespace() -> CronNode.Single(
-                this.input.slice(this.currPos..this.readPos),
+            else -> CronNode.Single(
+                this.input.slice(this.currPos-1..min(this.readPos, this.input.length-1)),
                 this.currInterval,
-                num = numChars.contentToString().toInt()
+                num = numChars.joinToString().toInt()
             )
-            else -> error("oops")
         }
     }
 
     private fun readNumber(): CharArray {
-        var tok = this.getToken()
         val col = mutableListOf<Char>()
 
-        while (tok.isDigit()) {
-            col.add(tok)
-
-            tok = this.peekToken()
-            if (tok.isWhitespace()) {
-                break
-            }
-
-            if (!tok.isDigit()) {
-                break
-            }
-
+        while (this.readPos < this.input.length && this.input[this.readPos].isDigit()) {
+            col.add(this.input[this.readPos])
             this.readPos += 1
         }
 
+        this.currPos = this.readPos
         return col.toCharArray()
     }
 }
