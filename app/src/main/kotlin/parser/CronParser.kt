@@ -10,11 +10,11 @@ class CronParser private constructor(
     private var currPos: Int = 0,
     private var readPos: Int = 0,
     private var currToken: Char = ' ',
-    private var currInterval: Interval
+    lateinit private var currInterval: Interval
 ) {
     companion object {
         fun make(input: String): CronParser {
-            val parser = CronParser(input, currInterval = Interval.MINUTE)
+            val parser = CronParser(input)
             parser.currToken = parser.input[parser.currPos]
             return parser
         }
