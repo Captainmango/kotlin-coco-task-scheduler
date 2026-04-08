@@ -1,33 +1,30 @@
 package parser.domain
 
-enum class Operator(val opFn: (n: CronNode) -> List<Int>) {
-    WILDCARD({ wildcard(it) }),
-    SINGLE({ single(it) }),
-    RANGE({ range(it) }),
-    LIST({ list(it) }),
-    DIVISOR({ divisor(it) }),
+enum class Operator {
+    WILDCARD,
+    SINGLE,
+    RANGE,
+    LIST,
+    DIVISOR,
 }
 
-fun wildcard(node: CronNode): List<Int> {
+fun wildcard(node: CronNode.Wildcard): List<Int> {
     val range = node.interval.min..node.interval.max
     return range.toList()
 }
 
-fun single(node: CronNode): List<Int> {
-    return listOf(node.operands[0])
+fun single(node: CronNode.Single): List<Int> {
+    return listOf(node.num)
 }
 
-fun range(node: CronNode): List<Int> {
-    val one = node.operands[0]
-    val two = node.operands[1]
-    return (one..two).toList()
+fun range(node: CronNode.Range): List<Int> {
+    return (node.start..node.end).toList()
 }
 
-fun list(node: CronNode): List<Int> {
-    return node.operands.sorted()
+fun list(node: CronNode.NumList): List<Int> {
+    return node.nums.sorted()
 }
 
-fun divisor(node: CronNode): List<Int> {
-    val operand = node.operands[0]
-    return (node.interval.min..node.interval.max).filter{ it % operand == 0 }.toList()
+fun divisor(node: CronNode.Divisor): List<Int> {
+    return (node.interval.min..node.interval.max).filter{ it % node.div == 0 }.toList()
 }
