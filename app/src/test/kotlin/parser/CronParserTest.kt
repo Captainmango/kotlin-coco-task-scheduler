@@ -1,7 +1,9 @@
 package parser
 
+import org.junit.jupiter.api.Assertions.assertSame
 import parser.domain.CronNode
 import parser.domain.Interval
+import parser.domain.divisor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -31,15 +33,15 @@ class CronParserTest {
 
     @Test
     fun testCanParseFullBasicCron() {
-        val expectedInput = "*/15 1-5 1,15 * 1"
+        val expectedInput = "*/15 0-4 1,15 2 *"
         val parser = CronParser.make(expectedInput)
 
         val cron = parser.parse()
 
-        val minuteFragment = CronNode.Wildcard("*", Interval.MINUTE)
-        val hourFragment = CronNode.Wildcard("*", Interval.HOUR)
-        val dayOfMonthFragment = CronNode.Wildcard("*", Interval.DAY_OF_MONTH)
-        val monthFragment = CronNode.Wildcard("*", Interval.MONTH)
+        val minuteFragment = CronNode.Divisor("*/15", Interval.MINUTE, 15)
+        val hourFragment = CronNode.Range("0-4", Interval.HOUR, 0, 4)
+        val dayOfMonthFragment = CronNode.NumList("1,15", Interval.DAY_OF_MONTH, listOf(1,15))
+        val monthFragment = CronNode.Single("2", Interval.MONTH, 2)
         val dayOfWeekFragment = CronNode.Wildcard("*", Interval.DAY_OF_WEEK)
 
         assertEquals(minuteFragment, cron.minute)

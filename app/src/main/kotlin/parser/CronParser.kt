@@ -21,7 +21,6 @@ class CronParser private constructor(
     }
 
     fun parse(): Cron {
-        this.currToken = this.getToken()
         val cronNodes = mutableListOf<CronNode>()
         val cronOrder = sequenceOf<Interval>(
             Interval.MINUTE,
@@ -40,20 +39,23 @@ class CronParser private constructor(
                 this.currToken == '*' -> this.handleAsterisk()
                 this.currToken.isDigit() -> this.handleDigit()
                 this.currToken.isWhitespace() -> {
-                    val nextTok = this.peekToken()
-                    if (nextTok.isWhitespace()) {
-                        error("Invalid format. Too much whitespace")
+                    this.advancePositions()
+                    this.currToken = this.getToken()
+
+                    if (this.currToken != '*' || !this.currToken.isDigit()) {
+                        error("Invalid format: " + this.input)
                     }
 
-                    this.advanceReadHead(step = 1)
                     continue
                 }
+                // Should never get here
                 else -> error("Invalid input: " + this.currToken)
             }
 
             cronNodes.add(cf)
 
-            this.advanceReadHead(until = ' ')
+            this.skipWhitespace()
+
             if (cronOrder.hasNext()) {
                 this.currInterval = cronOrder.next()
             }
@@ -62,17 +64,16 @@ class CronParser private constructor(
         return Cron.fromMutableList(cronNodes)
     }
 
-    private fun advanceReadHead(step: Int = 1, until: Char? = null) {
-        if (until != null) {
-            for ((idx, c) in this.input.slice(this.currPos..this.input.length-1).withIndex()) {
-                if (c == until) {
-                    this.currPos = idx
-                    this.readPos = this.currPos
-                }
-            }
+    private fun advancePositions() {
+        this.currPos++
+        this.readPos = this.currPos
+    }
+
+    private fun skipWhitespace() {
+        if (this.currPos < this.input.length && this.input[this.currPos].isWhitespace()) {
+            this.currPos++
         }
 
-        this.currPos += step
         this.readPos = this.currPos
     }
 
@@ -81,66 +82,86 @@ class CronParser private constructor(
     }
 
     private fun peekToken(): Char {
-        return this.input[min(this.input.length - 1, this.readPos + 1)]
+        return this.input[min(this.input.length - 1, this.currPos+1)]
     }
 
     private fun handleAsterisk(): CronNode {
+        val startPos = this.currPos
+
         if (this.peekToken() == '/') {
-            this.readPos += 2 // advance past forward slash as currently on asterisk
-            val divisor = String(this.readNumber()).toInt()
+            this.currPos += 2 // move past forward slash
+            this.readPos = this.currPos
+
+            val divisor = this.readNumber()
+            this.currPos = this.readPos // advance currPos past the number
 
             return CronNode.Divisor(
-                this.getRawString(),
+                this.getRawStringFrom(startPos),
                 this.currInterval,
                 div = divisor
             )
         }
 
-        // If the last char is an asterisk then it has to be a wildcard fragment.
-        if (this.currPos == this.readPos || this.peekToken() == ' ') {
-            return CronNode.Wildcard(this.getRawString(), this.currInterval)
+        // If the next char is whitespace or end of input, it's a wildcard
+        if (this.peekToken().isWhitespace() || this.currPos == this.input.length - 1) {
+            this.advancePositions()
+            return CronNode.Wildcard("*", this.currInterval)
         }
 
-        error("Invalid fragment")
+        error("Invalid fragment after asterisk: " + this.peekToken())
     }
 
     private fun handleDigit(): CronNode {
-        val numChars = this.readNumber()
+        val startPos = this.currPos
+        this.readPos = this.currPos
+
+        val num = this.readNumber()
 
         val nextTok = this.peekToken()
 
         return when (nextTok) {
             '-' -> {
-                this.readPos += 1
-                val topOfRange = this.readNumber()
+                this.currPos = this.readPos + 1 // skip '-'
+                this.readPos = this.currPos
+
+                val end = this.readNumber()
+
+                this.currPos = this.readPos // advance currPos past the range ident
                 CronNode.Range(
-                    this.getRawString(),
+                    this.getRawStringFrom(startPos),
                     this.currInterval,
-                    start = numChars.joinToString().toInt(),
-                    end = topOfRange.joinToString().toInt()
+                    start = num,
+                    end = end
                 )
             }
             ',' -> {
-                this.readPos += 1
+                this.currPos = this.readPos + 1 // skip ','
+                this.readPos = this.currPos
+
                 val nextNum = this.readNumber()
+
+                this.currPos = this.readPos // advance currPos past the list ident
                 CronNode.NumList(
-                    this.getRawString(),
+                    this.getRawStringFrom(startPos),
                     this.currInterval,
                     listOf<Int>(
-                        numChars.joinToString().toInt(),
-                        nextNum.joinToString().toInt(),
+                        num,
+                        nextNum,
                     )
                 )
             }
-            else -> CronNode.Single(
-                this.getRawString(),
-                this.currInterval,
-                num = String(numChars).toInt()
-            )
+            else -> {
+                this.currPos = this.readPos
+                CronNode.Single(
+                    this.getRawStringFrom(startPos),
+                    this.currInterval,
+                    num = num
+                )
+            }
         }
     }
 
-    private fun readNumber(): CharArray {
+    private fun readNumber(): Int {
         val col = mutableListOf<Char>()
 
         while (this.readPos < this.input.length && this.input[this.readPos].isDigit()) {
@@ -148,11 +169,10 @@ class CronParser private constructor(
             this.readPos += 1
         }
 
-        this.currPos = this.readPos
-        return col.toCharArray()
+        return String(col.toCharArray()).toInt()
     }
 
-    private fun getRawString(): String {
-        return this.input.slice(this.currPos..min(this.readPos, this.input.length-1))
+    private fun getRawStringFrom(startPos: Int): String {
+        return this.input.slice(startPos until min(this.readPos, this.input.length))
     }
 }
