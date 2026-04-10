@@ -6,11 +6,11 @@ import parser.domain.Interval
 import kotlin.math.min
 
 class CronParser private constructor(
-    val input: String,
+    val input: String = "",
     private var currPos: Int = 0,
     private var readPos: Int = 0,
     private var currToken: Char = ' ',
-    lateinit private var currInterval: Interval
+    private var currInterval: Interval = Interval.UNKNOWN
 ) {
     companion object {
         fun make(input: String): CronParser {
