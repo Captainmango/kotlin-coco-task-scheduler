@@ -7,6 +7,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin", "2.3.0"))
+    implementation(libs.kotlin.gradle.plugin)
 }
 
