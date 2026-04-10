@@ -16,6 +16,9 @@ tasks.register<Jar>("fatJar") {
     archiveBaseName.set("cli")
     manifest { attributes["Main-Class"] = "coco.cli.MainKt" }
     from(sourceSets["main"].output)
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) } )
+    from(configurations.runtimeClasspath.get().map {
+        if (it.isDirectory) it
+        else zipTree(it)
+    } )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
