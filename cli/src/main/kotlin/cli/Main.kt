@@ -1,4 +1,4 @@
-package coco.cli
+package cli
 
 import parser.CronParser
 

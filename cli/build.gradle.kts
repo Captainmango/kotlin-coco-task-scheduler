@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass.set("coco.cli.MainKt")
+    mainClass.set("cli.MainKt")
 }
 
 dependencies {
