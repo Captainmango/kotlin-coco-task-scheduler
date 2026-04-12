@@ -28,7 +28,7 @@ class CrontabManager(
         return out
     }
 
-    fun find(id: UUID): CronEntry? {
+    fun find(id: UUID): CronEntry {
         return this.list().first { it.id == id }
     }
 

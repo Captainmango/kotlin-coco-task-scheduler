@@ -5,7 +5,7 @@ import io.github.cdimascio.dotenv.dotenv
 import java.io.File
 
 class Config (private val dotenv: Dotenv = createDotenv()) {
-    val crontabFile: String = dotenv.get("CRONTAB_FILE", "")
+    val crontabFile: String = dotenv.get("CRONTAB_FILE", "$projectRoot/e2e/test.crontab")
 }
 
 var config: Config? = null
@@ -17,7 +17,7 @@ var config: Config? = null
 
 fun basePath(): File = File(projectRoot)
 
-private val projectRoot: String by lazy {
+val projectRoot: String by lazy {
     Config::class.java.classLoader
         .getResourceAsStream("project-info.properties")
         ?.use { stream ->
