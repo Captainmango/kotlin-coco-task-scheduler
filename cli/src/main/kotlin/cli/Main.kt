@@ -1,11 +1,10 @@
 package cli
 
-import parser.CronParser
+import cli.application.Coco
+import cli.application.ParseCron
+import com.github.ajalt.clikt.core.main
+import com.github.ajalt.clikt.core.subcommands
 
-fun main() {
-    val parser = CronParser.make("1 1-5 */3 1,2 *")
-
-    val out = parser.parse()
-
-    print(out)
-}
+fun main(args: Array<String>) = Coco()
+        .subcommands(ParseCron())
+        .main(args)
