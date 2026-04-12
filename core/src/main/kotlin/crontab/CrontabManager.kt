@@ -1,36 +1,38 @@
 package crontab
 
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.Reader
-import java.io.Writer
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import java.util.UUID
 
 const val CRON_ENTRY_LINE_FORMAT = "%s root /app/%s 2>&1 | tee -a /tmp/log # %s"
 
 class CrontabManager(
-    reader: Reader,
-    writer: Writer,
-) : AutoCloseable {
-    private val bufferedReader = BufferedReader(reader)
-    private val bufferedWriter = BufferedWriter(writer)
-
+    private val filePath: Path,
+) {
     fun add(cronEntries: List<CronEntry>) {
-        cronEntries.forEach { cE ->
-            this.bufferedWriter.appendLine(cE.toFormattedLine())
+        Files.newBufferedWriter(
+            filePath,
+            StandardOpenOption.WRITE,
+            StandardOpenOption.APPEND,
+            StandardOpenOption.SYNC,
+        ).use { writer ->
+            cronEntries.forEach { cE ->
+                writer.appendLine(cE.toFormattedLine())
+            }
         }
-        this.bufferedWriter.flush()
     }
 
     fun list(): List<CronEntry> {
         val out = mutableListOf<CronEntry>()
-        this.bufferedReader.lines().forEach { out.add(CronEntry.fromString(it)) }
+        Files.newBufferedReader(filePath).use { reader ->
+            reader.lines().forEach { out.add(CronEntry.fromString(it)) }
+        }
         return out
     }
 
-    fun find(id: UUID): CronEntry {
-        return this.list().first { it.id == id }
-    }
+    fun find(id: UUID): CronEntry = this.list().first { it.id == id }
+
 
     fun delete(id: UUID) {
         val writeBackList = this.list()
@@ -39,12 +41,13 @@ class CrontabManager(
                 acc + entry.toFormattedLine() + "\n"
             }
 
-        this.bufferedWriter.write(writeBackList)
-        this.bufferedWriter.flush()
-    }
-
-    override fun close() {
-        bufferedReader.close()
-        bufferedWriter.close()
+        Files.newBufferedWriter(
+            filePath,
+            StandardOpenOption.WRITE,
+            StandardOpenOption.TRUNCATE_EXISTING,
+            StandardOpenOption.SYNC,
+        ).use { writer ->
+            writer.write(writeBackList)
+        }
     }
 }

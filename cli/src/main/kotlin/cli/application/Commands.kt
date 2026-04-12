@@ -30,10 +30,7 @@ class AddTask : CliktCommand() {
     override fun run() {
         val cronFile = File(config!!.crontabFile)
 
-        val crontabManager = CrontabManager(
-            cronFile.bufferedReader(),
-            cronFile.bufferedWriter(),
-        )
+        val crontabManager = CrontabManager(cronFile.toPath())
 
         val cron = CronParser.make(cronExpr).parse()
 

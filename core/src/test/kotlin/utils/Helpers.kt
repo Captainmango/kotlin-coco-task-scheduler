@@ -22,7 +22,5 @@ fun createCrontabManager(content: String = ""): Pair<CrontabManager, java.nio.fi
     val file = Files.createTempFile("crontab-test-", ".txt")
     Files.writeString(file, content)
 
-    val reader = Files.newBufferedReader(file)
-    val writer = Files.newBufferedWriter(file, StandardOpenOption.SYNC)
-    return Pair(CrontabManager(reader, writer), file)
+    return Pair(CrontabManager(file), file)
 }

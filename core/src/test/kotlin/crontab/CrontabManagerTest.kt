@@ -33,7 +33,7 @@ class CrontabManagerTest {
         val (crontabManager, f) = createCrontabManager()
         this.tempFile = f
 
-        crontabManager.use { cM -> cM.add(listOf(cronEntry)) }
+        crontabManager.add(listOf(cronEntry))
 
         assertEquals(cronEntry.toFormattedLine() + "\n", Files.readString(f))
     }
@@ -59,7 +59,7 @@ class CrontabManagerTest {
         val (crontabManager, f) = createCrontabManager(content)
         this.tempFile = f
 
-        val results = crontabManager.use { cM -> cM.list() }
+        val results = crontabManager.list()
 
         assertContains(results, cronEntryOne)
         assertContains(results, cronEntryTwo)
@@ -84,7 +84,7 @@ class CrontabManagerTest {
 
         val (crontabManager, f) = createCrontabManager(content)
         this.tempFile = f
-        val result = crontabManager.use { cM -> cM.find(cronEntryOne.id) }
+        val result = crontabManager.find(cronEntryOne.id)
 
         assertEquals(cronEntryOne, result)
     }
@@ -108,10 +108,37 @@ class CrontabManagerTest {
 
         val (crontabManager, f) = createCrontabManager(content)
         this.tempFile = f
-        crontabManager.use { cM -> cM.delete(cronEntryOne.id)}
+        crontabManager.delete(cronEntryOne.id)
 
         val output = Files.readString(f)
         assertContains(output, cronEntryTwo.toFormattedLine())
         assert(!output.contains(cronEntryOne.toFormattedLine()))
+    }
+
+    @Test
+    fun testItAppendsNewEntriesToEndOfExistingContent() {
+        val existingEntry = CronEntry(
+            CronFactory.createSimple(),
+            "existing-command",
+        )
+
+        val newEntry = CronEntry(
+            CronFactory.createSimple(),
+            "new-command",
+        )
+
+        val content = existingEntry.toFormattedLine() + "\n"
+
+        val (crontabManager, f) = createCrontabManager(content)
+        this.tempFile = f
+
+        crontabManager.add(listOf(newEntry))
+
+        val output = Files.readString(f)
+        val lines = output.lines().filter { it.isNotBlank() }
+
+        assertEquals(2, lines.size)
+        assertEquals(existingEntry.toFormattedLine(), lines[0])
+        assertEquals(newEntry.toFormattedLine(), lines[1])
     }
 }
