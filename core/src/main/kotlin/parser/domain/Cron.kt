@@ -6,7 +6,6 @@ data class Cron (
     var dayOfMonth: CronNode? = null,
     var month: CronNode? = null,
     var dayOfWeek: CronNode? = null,
-    var cmd: String? = null,
 ) {
     companion object {
         fun fromMutableList(l: List<CronNode>): Cron {
@@ -24,5 +23,16 @@ data class Cron (
                 dayOfWeekFragment,
             )
         }
+    }
+
+    override fun toString(): String {
+        return String.format(
+            "%s %s %s %s %s",
+            this.minute?.raw,
+            this.hour?.raw,
+            this.dayOfMonth?.raw,
+            this.month?.raw,
+            this.dayOfWeek?.raw
+        )
     }
 }
