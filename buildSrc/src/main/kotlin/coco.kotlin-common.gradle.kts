@@ -26,3 +26,14 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
+// Generate project-info.properties with the project root
+tasks.named<ProcessResources>("processResources") {
+    val projectRoot = rootProject.rootDir.absolutePath
+    inputs.property("project.root", projectRoot)
+    filesMatching("**/project-info.properties") {
+        filter { line ->
+            line.replace($$"${project.root}", projectRoot)
+        }
+    }
+}

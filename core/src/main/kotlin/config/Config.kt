@@ -15,26 +15,22 @@ var config: Config? = null
     }
     private set
 
-private fun createDotenv(): Dotenv {
-    val projectRoot = findProjectRoot()
-    return dotenv {
-        directory = projectRoot.absolutePath
-        ignoreIfMissing = true
-    }
+fun basePath(): File = File(projectRoot)
+
+private val projectRoot: String by lazy {
+    Config::class.java.classLoader
+        .getResourceAsStream("project-info.properties")
+        ?.use { stream ->
+            val props = java.util.Properties()
+            props.load(stream)
+            props.getProperty("project.root")
+        }
+        ?: throw IllegalStateException("project-info.properties not found. Did you run the build?")
 }
 
-private fun findProjectRoot(): File {
-    var dir: File? = File(System.getProperty("user.dir"))
-
-    // Walk up the directory tree looking for .env file
-    while (dir != null) {
-        val envFile = File(dir, ".env")
-        if (envFile.exists()) {
-            return dir
-        }
-        dir = dir.parentFile
+private fun createDotenv(): Dotenv {
+    return dotenv {
+        directory = basePath().absolutePath
+        ignoreIfMissing = true
     }
-
-    // Fallback to current directory if not found
-    return File(System.getProperty("user.dir"))
 }
