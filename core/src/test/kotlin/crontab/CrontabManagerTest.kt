@@ -1,13 +1,25 @@
 package crontab
 
+import config.Config
 import utils.CronFactory
-import java.io.StringReader
-import java.io.StringWriter
+import java.io.*
+import java.nio.file.Files
 import java.util.UUID
+import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import utils.createCrontabManager
+
 
 class CrontabManagerTest {
+    private var tempFile: java.nio.file.Path? = null
+
+    @AfterTest
+    fun cleanup() {
+        this.tempFile?.let { Files.deleteIfExists(it) }
+    }
+
     @Test
     fun testItCanAddCrontabEntry() {
         val cronId = UUID.randomUUID()
@@ -18,12 +30,88 @@ class CrontabManagerTest {
             cronId
         )
 
-        val testReader = StringReader("")
-        val testWriter = StringWriter()
+        val (crontabManager, f) = createCrontabManager()
+        this.tempFile = f
 
-        val crontabManager = CrontabManager(testReader, testWriter)
-        crontabManager.add(cronEntry)
+        crontabManager.use { cM -> cM.add(listOf(cronEntry)) }
 
-        assertEquals(cronEntry.toFormattedLine(), testWriter.toString())
+        assertEquals(cronEntry.toFormattedLine() + "\n", Files.readString(f))
+    }
+
+    @Test
+    fun testItCanListCrontabEntries() {
+        val cronEntryOne = CronEntry(
+            CronFactory.createSimple(),
+            "test-command",
+        )
+
+        val cronEntryTwo = CronEntry(
+            CronFactory.createSimple(),
+            "test-command",
+        )
+
+        val content = """
+            ${cronEntryOne.toFormattedLine()}
+            ${cronEntryTwo.toFormattedLine()}
+        """.trimIndent()
+
+
+        val (crontabManager, f) = createCrontabManager(content)
+        this.tempFile = f
+
+        val results = crontabManager.use { cM -> cM.list() }
+
+        assertContains(results, cronEntryOne)
+        assertContains(results, cronEntryTwo)
+    }
+
+    @Test
+    fun testItCanFindCrontabEntries() {
+        val cronEntryOne = CronEntry(
+            CronFactory.createSimple(),
+            "test-command",
+        )
+
+        val cronEntryTwo = CronEntry(
+            CronFactory.createSimple(),
+            "test-command",
+        )
+
+        val content = """
+            ${cronEntryOne.toFormattedLine()}
+            ${cronEntryTwo.toFormattedLine()}
+        """.trimIndent()
+
+        val (crontabManager, f) = createCrontabManager(content)
+        this.tempFile = f
+        val result = crontabManager.use { cM -> cM.find(cronEntryOne.id) }
+
+        assertEquals(cronEntryOne, result)
+    }
+
+    @Test
+    fun testItCanDeleteCrontabEntry() {
+        val cronEntryOne = CronEntry(
+            CronFactory.createSimple(),
+            "test-command",
+        )
+
+        val cronEntryTwo = CronEntry(
+            CronFactory.createSimple(),
+            "test-command",
+        )
+
+        val content = """
+            ${cronEntryOne.toFormattedLine()}
+            ${cronEntryTwo.toFormattedLine()}
+        """.trimIndent()
+
+        val (crontabManager, f) = createCrontabManager(content)
+        this.tempFile = f
+        crontabManager.use { cM -> cM.delete(cronEntryOne.id)}
+
+        val output = Files.readString(f)
+        assertContains(output, cronEntryTwo.toFormattedLine())
+        assert(!output.contains(cronEntryOne.toFormattedLine()))
     }
 }

@@ -18,9 +18,13 @@ data class CronEntry(
             val (cmd, id) = rest.split(" # ")
             val uuid = UUID.fromString(id.slice(0 .. 35))
 
+            val cmdRegex = """/app/(.+?) 2>&1""".toRegex()
+            val match = cmdRegex.find(cmd)
+            val extractedCmd = match?.groupValues?.get(1) ?: cmd
+
             return CronEntry(
                 cron,
-                cmd,
+                extractedCmd,
                 uuid,
             )
         }
