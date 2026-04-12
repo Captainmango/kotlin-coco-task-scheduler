@@ -5,10 +5,6 @@
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/9.4.1/userguide/building_java_projects.html in the Gradle documentation.
  */
 
-plugins {
-    id("coco.kotlin-common")
-}
+plugins { id("coco.kotlin-common") }
 
-dependencies {
-    implementation(libs.dotenv)
-}
+dependencies { implementation(libs.dotenv) }

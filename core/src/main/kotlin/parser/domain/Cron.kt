@@ -1,6 +1,6 @@
 package parser.domain
 
-data class Cron (
+data class Cron(
     var minute: CronNode? = null,
     var hour: CronNode? = null,
     var dayOfMonth: CronNode? = null,
@@ -32,7 +32,7 @@ data class Cron (
             this.hour?.raw,
             this.dayOfMonth?.raw,
             this.month?.raw,
-            this.dayOfWeek?.raw
+            this.dayOfWeek?.raw,
         )
     }
 }

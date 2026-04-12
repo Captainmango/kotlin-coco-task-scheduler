@@ -26,5 +26,5 @@ fun list(node: CronNode.NumList): List<Int> {
 }
 
 fun divisor(node: CronNode.Divisor): List<Int> {
-    return (node.interval.min..node.interval.max).filter{ it % node.div == 0 }.toList()
+    return (node.interval.min..node.interval.max).filter { it % node.div == 0 }.toList()
 }

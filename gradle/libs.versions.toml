@@ -5,8 +5,10 @@
 clikt = "5.1.0"
 kotlin = "2.3.20"
 dotenv = "6.5.1"
+ktfmt = "0.26.0"
 
 [libraries]
 clikt = { module = "com.github.ajalt.clikt:clikt-jvm", version.ref = "clikt" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 dotenv = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenv" }
+ktfmt-gradle-plugin = { module = "com.ncorti.ktfmt.gradle:com.ncorti.ktfmt.gradle.gradle.plugin", version.ref = "ktfmt" }

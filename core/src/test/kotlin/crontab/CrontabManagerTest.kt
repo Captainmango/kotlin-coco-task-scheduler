@@ -1,7 +1,5 @@
 package crontab
 
-import config.Config
-import utils.CronFactory
 import java.io.*
 import java.nio.file.Files
 import java.util.UUID
@@ -9,8 +7,8 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import utils.CronFactory
 import utils.createCrontabManager
-
 
 class CrontabManagerTest {
     private var tempFile: java.nio.file.Path? = null
@@ -24,11 +22,7 @@ class CrontabManagerTest {
     fun testItCanAddCrontabEntry() {
         val cronId = UUID.randomUUID()
 
-        val cronEntry = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-            cronId
-        )
+        val cronEntry = CronEntry(CronFactory.createSimple(), "test-command", cronId)
 
         val (crontabManager, f) = createCrontabManager()
         this.tempFile = f
@@ -40,21 +34,16 @@ class CrontabManagerTest {
 
     @Test
     fun testItCanListCrontabEntries() {
-        val cronEntryOne = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-        )
+        val cronEntryOne = CronEntry(CronFactory.createSimple(), "test-command")
 
-        val cronEntryTwo = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-        )
+        val cronEntryTwo = CronEntry(CronFactory.createSimple(), "test-command")
 
-        val content = """
+        val content =
+            """
             ${cronEntryOne.toFormattedLine()}
             ${cronEntryTwo.toFormattedLine()}
-        """.trimIndent()
-
+        """
+                .trimIndent()
 
         val (crontabManager, f) = createCrontabManager(content)
         this.tempFile = f
@@ -67,20 +56,16 @@ class CrontabManagerTest {
 
     @Test
     fun testItCanFindCrontabEntries() {
-        val cronEntryOne = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-        )
+        val cronEntryOne = CronEntry(CronFactory.createSimple(), "test-command")
 
-        val cronEntryTwo = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-        )
+        val cronEntryTwo = CronEntry(CronFactory.createSimple(), "test-command")
 
-        val content = """
+        val content =
+            """
             ${cronEntryOne.toFormattedLine()}
             ${cronEntryTwo.toFormattedLine()}
-        """.trimIndent()
+        """
+                .trimIndent()
 
         val (crontabManager, f) = createCrontabManager(content)
         this.tempFile = f
@@ -91,20 +76,16 @@ class CrontabManagerTest {
 
     @Test
     fun testItCanDeleteCrontabEntry() {
-        val cronEntryOne = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-        )
+        val cronEntryOne = CronEntry(CronFactory.createSimple(), "test-command")
 
-        val cronEntryTwo = CronEntry(
-            CronFactory.createSimple(),
-            "test-command",
-        )
+        val cronEntryTwo = CronEntry(CronFactory.createSimple(), "test-command")
 
-        val content = """
+        val content =
+            """
             ${cronEntryOne.toFormattedLine()}
             ${cronEntryTwo.toFormattedLine()}
-        """.trimIndent()
+        """
+                .trimIndent()
 
         val (crontabManager, f) = createCrontabManager(content)
         this.tempFile = f
@@ -117,15 +98,9 @@ class CrontabManagerTest {
 
     @Test
     fun testItAppendsNewEntriesToEndOfExistingContent() {
-        val existingEntry = CronEntry(
-            CronFactory.createSimple(),
-            "existing-command",
-        )
+        val existingEntry = CronEntry(CronFactory.createSimple(), "existing-command")
 
-        val newEntry = CronEntry(
-            CronFactory.createSimple(),
-            "new-command",
-        )
+        val newEntry = CronEntry(CronFactory.createSimple(), "new-command")
 
         val content = existingEntry.toFormattedLine() + "\n"
 

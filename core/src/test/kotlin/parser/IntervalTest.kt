@@ -1,9 +1,9 @@
 package parser
 
-import parser.domain.CronNode
-import parser.domain.Interval
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import parser.domain.CronNode
+import parser.domain.Interval
 
 class IntervalTest {
     @Test

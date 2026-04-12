@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    id("com.ncorti.ktfmt.gradle")
 }
 
 repositories {
@@ -25,6 +26,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+ktfmt {
+    // KotlinLang style - 4 space indentation - From kotlinlang.org/docs/coding-conventions.html
+    kotlinLangStyle()
 }
 
 // Generate project-info.properties with the project root

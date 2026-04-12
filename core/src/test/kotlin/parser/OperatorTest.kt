@@ -1,10 +1,9 @@
 package parser
 
-import parser.domain.CronNode
-import parser.domain.Interval
-import parser.domain.Operator
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import parser.domain.CronNode
+import parser.domain.Interval
 
 class OperatorTest {
     @Test

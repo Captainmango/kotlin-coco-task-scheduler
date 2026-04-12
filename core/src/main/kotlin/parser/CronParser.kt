@@ -1,16 +1,17 @@
 package parser
 
+import kotlin.math.min
 import parser.domain.Cron
 import parser.domain.CronNode
 import parser.domain.Interval
-import kotlin.math.min
 
-class CronParser private constructor(
+class CronParser
+private constructor(
     val input: String = "",
     private var currPos: Int = 0,
     private var readPos: Int = 0,
     private var currToken: Char = ' ',
-    private var currInterval: Interval = Interval.UNKNOWN
+    private var currInterval: Interval = Interval.UNKNOWN,
 ) {
     companion object {
         fun make(input: String): CronParser {
@@ -22,35 +23,38 @@ class CronParser private constructor(
 
     fun parse(): Cron {
         val cronNodes = mutableListOf<CronNode>()
-        val cronOrder = sequenceOf<Interval>(
-            Interval.MINUTE,
-            Interval.HOUR,
-            Interval.DAY_OF_MONTH,
-            Interval.MONTH,
-            Interval.DAY_OF_WEEK,
-        ).iterator()
+        val cronOrder =
+            sequenceOf<Interval>(
+                    Interval.MINUTE,
+                    Interval.HOUR,
+                    Interval.DAY_OF_MONTH,
+                    Interval.MONTH,
+                    Interval.DAY_OF_WEEK,
+                )
+                .iterator()
 
         this.currInterval = cronOrder.next()
 
         while (this.currPos <= this.input.length - 1) {
             this.currToken = this.getToken()
 
-            val cf = when {
-                this.currToken == '*' -> this.handleAsterisk()
-                this.currToken.isDigit() -> this.handleDigit()
-                this.currToken.isWhitespace() -> {
-                    this.advancePositions()
-                    this.currToken = this.getToken()
+            val cf =
+                when {
+                    this.currToken == '*' -> this.handleAsterisk()
+                    this.currToken.isDigit() -> this.handleDigit()
+                    this.currToken.isWhitespace() -> {
+                        this.advancePositions()
+                        this.currToken = this.getToken()
 
-                    if (this.currToken != '*' || !this.currToken.isDigit()) {
-                        error("Invalid format: " + this.input)
+                        if (this.currToken != '*' || !this.currToken.isDigit()) {
+                            error("Invalid format: " + this.input)
+                        }
+
+                        continue
                     }
-
-                    continue
+                    // Should never get here
+                    else -> error("Invalid input: " + this.currToken)
                 }
-                // Should never get here
-                else -> error("Invalid input: " + this.currToken)
-            }
 
             cronNodes.add(cf)
 
@@ -82,7 +86,7 @@ class CronParser private constructor(
     }
 
     private fun peekToken(): Char {
-        return this.input[min(this.input.length - 1, this.currPos+1)]
+        return this.input[min(this.input.length - 1, this.currPos + 1)]
     }
 
     private fun handleAsterisk(): CronNode {
@@ -98,7 +102,7 @@ class CronParser private constructor(
             return CronNode.Divisor(
                 this.getRawStringFrom(startPos),
                 this.currInterval,
-                div = divisor
+                div = divisor,
             )
         }
 
@@ -132,7 +136,7 @@ class CronParser private constructor(
                     this.getRawStringFrom(startPos),
                     this.currInterval,
                     start = num,
-                    end = end
+                    end = end,
                 )
             }
             ',' -> {
@@ -145,19 +149,12 @@ class CronParser private constructor(
                 CronNode.NumList(
                     this.getRawStringFrom(startPos),
                     this.currInterval,
-                    listOf<Int>(
-                        num,
-                        nextNum,
-                    )
+                    listOf<Int>(num, nextNum),
                 )
             }
             else -> {
                 this.currPos = this.readPos
-                CronNode.Single(
-                    this.getRawStringFrom(startPos),
-                    this.currInterval,
-                    num = num
-                )
+                CronNode.Single(this.getRawStringFrom(startPos), this.currInterval, num = num)
             }
         }
     }

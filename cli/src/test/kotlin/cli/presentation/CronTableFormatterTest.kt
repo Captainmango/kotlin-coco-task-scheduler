@@ -1,9 +1,8 @@
 package cli.presentation
 
-import parser.CronParser
 import kotlin.test.Test
 import kotlin.test.assertContains
-import kotlin.test.assertTrue
+import parser.CronParser
 
 class CronTableFormatterTest {
 

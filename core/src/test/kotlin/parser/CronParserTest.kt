@@ -1,13 +1,10 @@
 package parser
 
-import org.junit.jupiter.api.Assertions.assertSame
-import parser.domain.CronNode
-import parser.domain.Interval
-import parser.domain.divisor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
+import parser.domain.CronNode
+import parser.domain.Interval
 
 class CronParserTest {
     @Test
@@ -41,7 +38,7 @@ class CronParserTest {
 
         val minuteFragment = CronNode.Divisor("*/15", Interval.MINUTE, 15)
         val hourFragment = CronNode.Range("0-4", Interval.HOUR, 0, 4)
-        val dayOfMonthFragment = CronNode.NumList("1,15", Interval.DAY_OF_MONTH, listOf(1,15))
+        val dayOfMonthFragment = CronNode.NumList("1,15", Interval.DAY_OF_MONTH, listOf(1, 15))
         val monthFragment = CronNode.Single("2", Interval.MONTH, 2)
         val dayOfWeekFragment = CronNode.Wildcard("*", Interval.DAY_OF_WEEK)
 
@@ -54,29 +51,21 @@ class CronParserTest {
 
     @Test
     fun testEmptyInputThrowsError() {
-        assertFailsWith<Exception> {
-            CronParser.make("").parse()
-        }
+        assertFailsWith<Exception> { CronParser.make("").parse() }
     }
 
     @Test
     fun testInvalidCharacterThrowsError() {
-        assertFailsWith<Exception> {
-            CronParser.make("a * * * *").parse()
-        }
+        assertFailsWith<Exception> { CronParser.make("a * * * *").parse() }
     }
 
     @Test
     fun testInvalidFragmentAfterAsteriskThrowsError() {
-        assertFailsWith<Exception> {
-            CronParser.make("*5 * * * *").parse()
-        }
+        assertFailsWith<Exception> { CronParser.make("*5 * * * *").parse() }
     }
 
     @Test
     fun testInvalidFormatWithWhitespaceThrowsError() {
-        assertFailsWith<Exception> {
-            CronParser.make("*  * * * *").parse()
-        }
+        assertFailsWith<Exception> { CronParser.make("*  * * * *").parse() }
     }
 }

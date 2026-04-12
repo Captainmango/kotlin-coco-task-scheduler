@@ -1,6 +1,5 @@
 package config
 
-import io.github.cdimascio.dotenv.Dotenv
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import utils.fakeEnv
