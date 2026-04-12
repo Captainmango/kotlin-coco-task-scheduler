@@ -29,6 +29,9 @@ class AddTask : CliktCommand() {
     val cmd: String by argument(name = "command", help = "The command to be ran")
     override fun run() {
         val cronFile = File(config!!.crontabFile)
+        if (!cronFile.exists()) {
+            Files.createFile(cronFile.toPath())
+        }
 
         val crontabManager = CrontabManager(cronFile.toPath())
 
