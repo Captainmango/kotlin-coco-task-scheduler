@@ -4,6 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import parser.domain.CronNode
 import parser.domain.Interval
+import kotlin.test.assertFailsWith
 
 class OperatorTest {
     @Test
@@ -40,6 +41,15 @@ class OperatorTest {
 
         val res = cronNode.getPossibleValues()
         assertEquals(expectedRange, res)
+    }
+
+    @Test
+    fun testSingleOperatorValueOutsideBounds() {
+        val cronNode = CronNode.Single("", Interval.HOUR, 99)
+
+        assertFailsWith<Exception> {
+            cronNode.getPossibleValues()
+        }
     }
 
     @Test

@@ -15,7 +15,7 @@
   - [x] Range
   - [x] Wildcard
 - [x] Write to file tests
-- [ ] Input validation
+- [x] Input validation
 - [x] Read from stdin/ input stream
   - [x] CLI
 - [ ] API to receive tasks and stuff?
@@ -23,4 +23,4 @@
   - [ ] RabbitMQ Again?? (probably as the ref impl is in that)
 - [ ] Dockerise the app
 - [ ] GraalVM?
-- Thread safety? (Might come back to this when I've learned more about coroutines)
+- [ ] Thread safety? (Might come back to this when I've learned more about coroutines)
