@@ -30,6 +30,29 @@ class CronParserTest {
     }
 
     @Test
+    fun testCanReuseSameParserObject() {
+        val expectedInput = "* 1 * * *"
+        val parser = CronParser.make(expectedInput)
+
+        val cron = parser.parse()
+
+        val minuteFragment = CronNode.Wildcard("*", Interval.MINUTE)
+        val hourFragment = CronNode.Single("1", Interval.HOUR, 1)
+
+        assertEquals(minuteFragment, cron.minute)
+        assertEquals(hourFragment, cron.hour)
+
+        parser.input = "1 1 1 1 1"
+        val newCron = parser.parse()
+
+        val newMinuteFragment = CronNode.Single("1", Interval.MINUTE, 1)
+        val newHourFragment = CronNode.Single("1", Interval.HOUR, 1)
+
+        assertEquals(newMinuteFragment, newCron.minute)
+        assertEquals(newHourFragment, newCron.hour)
+    }
+
+    @Test
     fun testCanParseFullBasicCron() {
         val expectedInput = "*/15 0-4 1,15 2 *"
         val parser = CronParser.make(expectedInput)
@@ -62,10 +85,5 @@ class CronParserTest {
     @Test
     fun testInvalidFragmentAfterAsteriskThrowsError() {
         assertFailsWith<Exception> { CronParser.make("*5 * * * *").parse() }
-    }
-
-    @Test
-    fun testInvalidFormatWithWhitespaceThrowsError() {
-        assertFailsWith<Exception> { CronParser.make("*  * * * *").parse() }
     }
 }

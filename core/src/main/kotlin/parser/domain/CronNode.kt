@@ -2,26 +2,26 @@ package parser.domain
 
 sealed interface CronNode {
     val raw: String
-    val interval: Interval?
+    var interval: Interval?
 
-    data class Single(override val raw: String, override val interval: Interval, val num: Int) :
+    data class Single(override val raw: String, override var interval: Interval? = null, val num: Int) :
         CronNode
 
-    data class Wildcard(override val raw: String, override val interval: Interval) : CronNode
+    data class Wildcard(override val raw: String, override var interval: Interval? = null) : CronNode
 
     data class Range(
         override val raw: String,
-        override val interval: Interval,
+        override var interval: Interval? = null,
         val start: Int,
         val end: Int,
     ) : CronNode
 
-    data class Divisor(override val raw: String, override val interval: Interval, val div: Int) :
+    data class Divisor(override val raw: String, override var interval: Interval? = null, val div: Int) :
         CronNode
 
     data class NumList(
         override val raw: String,
-        override val interval: Interval,
+        override var interval: Interval? = null,
         val nums: List<Int>,
     ) : CronNode
 

@@ -9,11 +9,11 @@ data class Cron(
 ) {
     companion object {
         fun fromMutableList(l: List<CronNode>): Cron {
-            val minuteFragment = l.getOrNull(0)
-            val hourFragment = l.getOrNull(1)
-            val dayOfMonthFragment = l.getOrNull(2)
-            val monthFragment = l.getOrNull(3)
-            val dayOfWeekFragment = l.getOrNull(4)
+            val minuteFragment = l.find { cN -> cN.interval == Interval.MINUTE }
+            val hourFragment = l.find { cN -> cN.interval == Interval.HOUR }
+            val dayOfMonthFragment = l.find { cN -> cN.interval == Interval.DAY_OF_MONTH }
+            val monthFragment = l.find { cN -> cN.interval == Interval.MONTH }
+            val dayOfWeekFragment = l.find { cN -> cN.interval == Interval.DAY_OF_WEEK }
 
             return Cron(
                 minuteFragment,

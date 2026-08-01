@@ -1,18 +1,8 @@
 package parser.domain
 
-import jdk.internal.joptsimple.internal.Strings
-
-enum class Operator {
-    WILDCARD,
-    SINGLE,
-    RANGE,
-    LIST,
-    DIVISOR,
-}
-
 fun wildcard(node: CronNode.Wildcard): List<Int> {
     validateNode(node)
-    val range = node.interval.min..node.interval.max
+    val range = node.interval!!.min..node.interval!!.max
     return range.toList()
 }
 
@@ -33,7 +23,7 @@ fun list(node: CronNode.NumList): List<Int> {
 
 fun divisor(node: CronNode.Divisor): List<Int> {
     validateNode(node)
-    return (node.interval.min..node.interval.max).filter { it % node.div == 0 }.toList()
+    return (node.interval!!.min..node.interval!!.max).filter { it % node.div == 0 }.toList()
 }
 
 private fun validateNode(node: CronNode) {
@@ -41,8 +31,8 @@ private fun validateNode(node: CronNode) {
         n >= node.interval!!.min && n <= node.interval!!.max
     }
 
-    val errorFmtFn: (n: Int, i: Interval) -> String = { n: Int, i: Interval ->
-        String.format("Value $n outside of ${i.name} range")
+    val errorFmtFn: (n: Int, i: Interval?) -> String = { n: Int, i: Interval? ->
+        String.format("Value $n outside of ${i!!.name} range")
     }
 
     when (node) {
