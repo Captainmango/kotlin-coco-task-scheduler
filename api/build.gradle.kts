@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":core"))
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
+    testImplementation(ktorLibs.server.testHost)
 }
 
 tasks.register<Jar>("fatJar") {
