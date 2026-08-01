@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-application { mainClass.set("api.MainKt") }
+application { mainClass.set("api.ApplicationKt") }
 
 dependencies {
     implementation(project(":core"))
@@ -13,7 +13,7 @@ dependencies {
 
 tasks.register<Jar>("fatJar") {
     archiveBaseName.set("api")
-    manifest { attributes["Main-Class"] = "api.MainKt" }
+    manifest { attributes["Main-Class"] = "api.ApplicationKt" }
     from(sourceSets["main"].output)
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
