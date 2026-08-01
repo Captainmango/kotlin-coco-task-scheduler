@@ -17,5 +17,16 @@ plugins {
 }
 
 rootProject.name = "kotlin-coco-bingo"
-include(":core", ":cli")
-include("api")
+include(":core", ":cli", ":api")
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        // Ktor's published catalog: this one version pins every ktorLibs.* dependency.
+        create("ktorLibs") {
+            from("io.ktor:ktor-version-catalog:3.5.1")
+        }
+    }
+}

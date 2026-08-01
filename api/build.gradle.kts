@@ -7,7 +7,8 @@ application { mainClass.set("api.MainKt") }
 
 dependencies {
     implementation(project(":core"))
-    implementation(libs.clikt)
+    implementation(ktorLibs.server.core)
+    implementation(ktorLibs.server.netty)
 }
 
 tasks.register<Jar>("fatJar") {
