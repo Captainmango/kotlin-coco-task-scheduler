@@ -18,3 +18,4 @@ plugins {
 
 rootProject.name = "kotlin-coco-bingo"
 include(":core", ":cli")
+include("api")
