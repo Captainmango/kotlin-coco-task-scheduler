@@ -13,6 +13,7 @@ dependencies {
     implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.serialization.kotlinx.json)
     implementation(ktorLibs.server.di)
+    implementation(libs.dotenv)
 
     // Dev deps
     testImplementation(ktorLibs.server.testHost)
