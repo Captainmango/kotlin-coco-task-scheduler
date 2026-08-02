@@ -3,13 +3,11 @@ package api.services
 import api.errors.CocoBingoError
 import crontab.CronEntry
 import crontab.ICrontabManager
+import java.util.UUID
 import kotlinx.serialization.Serializable
 import parser.CronParser
-import java.util.UUID
 
-class TaskManagementService(
-    private val crontabManager: ICrontabManager,
-) {
+class TaskManagementService(private val crontabManager: ICrontabManager) {
     fun listTasks(): List<CrontabTask> {
         return crontabManager.list().map { mapCronEntryToTask(it) }
     }
@@ -21,11 +19,7 @@ class TaskManagementService(
             val id = UUID.randomUUID()
             cronParser.input = task.cron
 
-            val cronEntry = CronEntry(
-                id = id,
-                cron = cronParser.parse(),
-                cmd = task.cmd
-            )
+            val cronEntry = CronEntry(id = id, cron = cronParser.parse(), cmd = task.cmd)
 
             crontabManager.add(listOf(cronEntry))
 
@@ -41,9 +35,12 @@ class TaskManagementService(
             val ce = crontabManager.find(uuid)
             return mapCronEntryToTask(ce)
         } catch (ne: NoSuchElementException) {
-            throw CocoBingoError.CronTaskNotFound("Unable to find cron task with ID: ${id}", cause=ne)
+            throw CocoBingoError.CronTaskNotFound(
+                "Unable to find cron task with ID: ${id}",
+                cause = ne,
+            )
         } catch (e: Throwable) {
-            throw CocoBingoError.GenericFailure("Encountered error", cause=e)
+            throw CocoBingoError.GenericFailure("Encountered error", cause = e)
         }
     }
 
@@ -56,15 +53,6 @@ class TaskManagementService(
         CrontabTask(cte.id.toString(), cte.cron.toString(), cte.cmd)
 }
 
-@Serializable
-data class CrontabTask(
-    val id: String,
-    val cron: String,
-    val cmd: String,
-)
+@Serializable data class CrontabTask(val id: String, val cron: String, val cmd: String)
 
-@Serializable
-data class CommandTask(
-    val cron: String,
-    val cmd: String,
-)
+@Serializable data class CommandTask(val cron: String, val cmd: String)

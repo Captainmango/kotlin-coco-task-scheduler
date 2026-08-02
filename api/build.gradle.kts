@@ -14,6 +14,7 @@ dependencies {
     implementation(ktorLibs.serialization.kotlinx.json)
     implementation(ktorLibs.server.di)
     implementation(libs.dotenv)
+    implementation(libs.ktlogging)
 
     // Dev deps
     testImplementation(ktorLibs.server.testHost)

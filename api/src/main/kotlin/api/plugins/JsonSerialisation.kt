@@ -11,11 +11,13 @@ import kotlinx.serialization.json.JsonNamingStrategy
 @OptIn(ExperimentalSerializationApi::class)
 fun Application.jsonSerialisation() {
     install(ContentNegotiation) {
-        json(Json {
-            namingStrategy = JsonNamingStrategy.SnakeCase
-            prettyPrint = true
-            isLenient = true
-            encodeDefaults = true
-        })
+        json(
+            Json {
+                namingStrategy = JsonNamingStrategy.SnakeCase
+                prettyPrint = true
+                isLenient = true
+                encodeDefaults = true
+            }
+        )
     }
 }

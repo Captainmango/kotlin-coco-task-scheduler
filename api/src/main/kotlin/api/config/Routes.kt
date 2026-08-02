@@ -23,14 +23,14 @@ fun Application.routeConfig() {
             }
 
             route("/tasks") {
+                val srv: TaskManagementService by dependencies
+
                 get {
-                    val srv = dependencies.resolve<TaskManagementService>()
                     val results = srv.listTasks()
                     call.sendResponse("task", results)
                 }
 
                 post {
-                    val srv = dependencies.resolve<TaskManagementService>()
                     val payload = call.receive<CommandTask>()
                     val result = srv.addTask(payload)
                     call.sendResponse("task", listOf(result))
@@ -38,29 +38,29 @@ fun Application.routeConfig() {
 
                 get("/{id}") {
                     val idParam = call.parameters["id"].toString()
-                    val srv = dependencies.resolve<TaskManagementService>()
 
                     try {
                         val result = srv.getById(idParam)
                         call.sendResponse("task", listOf(result))
                     } catch (ce: CocoBingoError) {
                         when (ce) {
-                            is CocoBingoError.CronTaskNotFound -> call.sendError(
-                                "task-not-found",
-                                ce.message,
-                                status = HttpStatusCode.NotFound
-                            )
-                            is CocoBingoError.GenericFailure -> call.sendError(
-                                "generic-failure",
-                                ce.message,
-                                status = HttpStatusCode.InternalServerError
-                            )
+                            is CocoBingoError.CronTaskNotFound ->
+                                call.sendError(
+                                    "task-not-found",
+                                    ce.message,
+                                    status = HttpStatusCode.NotFound,
+                                )
+                            is CocoBingoError.GenericFailure ->
+                                call.sendError(
+                                    "generic-failure",
+                                    ce.message,
+                                    status = HttpStatusCode.InternalServerError,
+                                )
                         }
                     }
                 }
                 delete("/{id}") {
                     val idParam = call.parameters["id"].toString()
-                    val srv = dependencies.resolve<TaskManagementService>()
                     srv.deleteById(idParam)
                     call.sendResponse<Unit>("task", status = HttpStatusCode.NoContent)
                 }
