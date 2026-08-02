@@ -12,6 +12,7 @@ dependencies {
     implementation(ktorLibs.server.netty)
     implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.serialization.kotlinx.json)
+    implementation(ktorLibs.server.di)
 
     // Dev deps
     testImplementation(ktorLibs.server.testHost)
