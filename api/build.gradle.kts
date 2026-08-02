@@ -15,6 +15,8 @@ dependencies {
     implementation(ktorLibs.server.di)
     implementation(libs.dotenv)
     implementation(libs.ktlogging)
+    implementation(libs.logback.classic)
+    implementation(libs.logstash.logback.encoder)
 
     // Dev deps
     testImplementation(ktorLibs.server.testHost)
