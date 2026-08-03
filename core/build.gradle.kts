@@ -10,4 +10,7 @@ plugins { id("coco.kotlin-common") }
 dependencies {
     implementation(libs.dotenv)
     implementation(libs.amqp.client)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
