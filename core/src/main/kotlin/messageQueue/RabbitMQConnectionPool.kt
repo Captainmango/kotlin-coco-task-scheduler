@@ -17,6 +17,42 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * A pool of RabbitMQ [AMQPChannel]s backed by a single [AMQPConnection]
+ * from the Kourier package https://github.com/kourier-amqp/kourier.
+ *
+ * The pool must be supplied with a [connectionFactory] that creates a new
+ * [AMQPConnection] on demand. This factory is invoked once when the pool
+ * initializes, inside [coroutineScope], so it should perform any connection
+ * establishment required (e.g. opening a TCP connection, negotiating the AMQP
+ * handshake) and return a ready-to-use connection. Kourier provides a helper function.
+ *
+ * [coroutineScope] is the lifecycle owner of the pool. The pool launches its
+ * initialisation work in this scope and will automatically call [close] when
+ * the scope's [Job] completes or is cancelled. It is expected to remain active
+ * for as long as the pool is needed. Closing or cancelling the scope will shut
+ * the pool down. Cleanup operations run in an independent internal scope, so
+ * the provided scope is never cancelled by the pool itself.
+ *
+ * Usage example:
+ * ```kotlin
+ * val pool = RabbitMQConnectionPool(
+ *     poolSize = 10,
+ *     connectionFactory = { createAMQPConnection() },
+ *     coroutineScope = application.coroutineScope,
+ * )
+ *
+ * // Publish a message using a pooled channel
+ * pool.use { channel ->
+ *     channel.basicPublish("exchange", "routingKey", message)
+ * }
+ *
+ * // Close the pool when the application stops
+ * monitor.subscribe(ApplicationStopped) {
+ *     pool.close()
+ * }
+ * ```
+ */
 @OptIn(ExperimentalAtomicApi::class, DelicateCoroutinesApi::class)
 class RabbitMQConnectionPool(
     val poolSize: Int = 10,
