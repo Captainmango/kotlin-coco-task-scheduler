@@ -7,4 +7,7 @@
 
 plugins { id("coco.kotlin-common") }
 
-dependencies { implementation(libs.dotenv) }
+dependencies {
+    implementation(libs.dotenv)
+    implementation(libs.amqp.client)
+}
