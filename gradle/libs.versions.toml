@@ -12,6 +12,7 @@ logstash-logback-encoder = "8.0"
 kourier = "0.4.6"
 mockk = "1.13.12"
 kotlinx-coroutines = "1.10.2"
+test-containers = "2.0.5"
 
 [libraries]
 clikt = { module = "com.github.ajalt.clikt:clikt-jvm", version.ref = "clikt" }
@@ -24,4 +25,6 @@ logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-enc
 amqp-client = { module = "dev.kourier:amqp-client", version.ref = "kourier" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+test-containers = { module = "org.testcontainers:testcontainers", version.ref = "test-containers" }
+test-containers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "test-containers" }
 
